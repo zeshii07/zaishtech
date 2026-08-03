@@ -21,30 +21,20 @@ export interface BlogPost {
 }
 
 export function getAllPosts(): BlogPost[] {
-  // Debug: Check if directory exists
-  console.log('📁 Blog directory path:', postsDirectory);
-  console.log('📁 Directory exists:', fs.existsSync(postsDirectory));
-
   if (!fs.existsSync(postsDirectory)) {
-    console.log('❌ Blog directory does NOT exist! Create it at:', postsDirectory);
     return [];
   }
 
   const fileNames = fs.readdirSync(postsDirectory);
-  console.log('📄 Files found:', fileNames);
 
   const allPosts = fileNames
     .filter((name) => name.endsWith('.mdx'))
     .map((fileName) => {
       const slug = fileName.replace(/\.mdx$/, '');
-      const post = getPostBySlug(slug);
-      console.log(`📝 Post: ${slug} — published: ${post?.published}`);
-      return post;
+      return getPostBySlug(slug);
     })
     .filter((post): post is BlogPost => post !== null && post.published)
     .sort((a, b) => (a.date > b.date ? -1 : 1));
-
-  console.log('✅ Total published posts:', allPosts.length);
 
   return allPosts;
 }
@@ -53,7 +43,6 @@ export function getPostBySlug(slug: string): BlogPost | null {
   const fullPath = path.join(postsDirectory, `${slug}.mdx`);
 
   if (!fs.existsSync(fullPath)) {
-    console.log('❌ File not found:', fullPath);
     return null;
   }
 
