@@ -4,6 +4,21 @@ import type { JwtPayload } from 'jsonwebtoken';
 
 type RequestBody = Record<string, unknown>;
 
+type PasswordComparable = {
+  comparePassword(candidatePassword: string): Promise<boolean>;
+};
+
+const INQUIRY_STATUSES = [
+  'new',
+  'contacted',
+  'in-progress',
+  'proposal-sent',
+  'closed-won',
+  'closed-lost',
+] as const;
+
+type InquiryStatus = (typeof INQUIRY_STATUSES)[number];
+
 type RouteResult = {
   status: number;
   data: {
@@ -180,12 +195,10 @@ async function routeRequest(
    * Adjust these import paths if this route file is not located where the
    * original imports expected it to be.
    */
-  const User = (await import('../../../server/src/models/User.js')).default;
-  const Inquiry = (await import('../../../server/src/models/Inquiry.js')).default;
-  const Subscriber = (
-    await import('../../../server/src/models/Subscriber.js')
-  ).default;
-  const Project = (await import('../../../server/src/models/Project.js')).default;
+  const User = (await import('@/models/User')).default;
+  const Inquiry = (await import('@/models/Inquiry')).default;
+  const Subscriber = (await import('@/models/Subscriber')).default;
+  const Project = (await import('@/models/Project')).default;
 
   // ---------------------------------------------------------------------------
   // Authentication routes
@@ -254,11 +267,19 @@ async function routeRequest(
 
     const user = await User.findOne({ email }).select('+password');
 
-    if (
-      !user ||
-      typeof user.comparePassword !== 'function' ||
-      !(await user.comparePassword(password))
-    ) {
+    if (!user) {
+      return {
+        status: 401,
+        data: {
+          success: false,
+          message: 'Invalid credentials.',
+        },
+      };
+    }
+
+    const passwordUser = user as typeof user & PasswordComparable;
+
+    if (!(await passwordUser.comparePassword(password))) {
       return {
         status: 401,
         data: {
@@ -413,18 +434,18 @@ async function routeRequest(
       return notFound('Inquiry not found.');
     }
 
-    const status = getOptionalString(body.status);
+    const status = getInquiryStatus(body.status);
     const notes = getOptionalString(body.notes);
+
+    if (body.status !== undefined && !status) {
+      return badRequest('Invalid inquiry status.');
+    }
 
     if (status) {
       inquiry.status = status;
     }
 
     if (notes) {
-      if (!Array.isArray(inquiry.notes)) {
-        inquiry.notes = [];
-      }
-
       inquiry.notes.push({
         text: notes,
         addedBy: user.name ?? 'Admin',
@@ -768,6 +789,14 @@ function getRequiredString(value: unknown): string | null {
 
 function getOptionalString(value: unknown): string | null {
   return getRequiredString(value);
+}
+
+function getInquiryStatus(value: unknown): InquiryStatus | null {
+  const status = getOptionalString(value);
+
+  return status && INQUIRY_STATUSES.includes(status as InquiryStatus)
+    ? (status as InquiryStatus)
+    : null;
 }
 
 function normalizeEmail(value: unknown): string | null {

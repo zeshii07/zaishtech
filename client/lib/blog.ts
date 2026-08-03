@@ -41,12 +41,12 @@ export function getAllPosts(): BlogPost[] {
       console.log(`📝 Post: ${slug} — published: ${post?.published}`);
       return post;
     })
-    .filter((post) => post && post.published)
+    .filter((post): post is BlogPost => post !== null && post.published)
     .sort((a, b) => (a.date > b.date ? -1 : 1));
 
   console.log('✅ Total published posts:', allPosts.length);
 
-  return allPosts as BlogPost[];
+  return allPosts;
 }
 
 export function getPostBySlug(slug: string): BlogPost | null {

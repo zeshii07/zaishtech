@@ -261,41 +261,54 @@ export default function AboutPage() {
             The Team
           </h2>
           <p className="mt-4 text-stone-500 leading-relaxed">
-            A lean team of senior engineers, designers, and AI specialists. No
-            juniors learning on your project — every person who touches your
-            code has 5+ years of production experience.
+            A focused team covering product development, search visibility,
+            intelligent automation, and user-centered design.
           </p>
 
-          <div className="mt-16 grid md:grid-cols-3 gap-8">
+          <div className="mt-16 grid sm:grid-cols-2 gap-8">
             {[
               {
-                name: "Engineering",
-                icon: "mdi:code-braces-box",
-                desc: "Full-stack developers specializing in Next.js, Express, Kotlin, and Python. Every feature is tested, documented, and deployable.",
+                name: "Founder Name",
+                role: "Founder & Full-Stack Developer",
+                image: "/team-placeholder-1.svg",
+                desc: "Leads product strategy and builds dependable web applications from polished interfaces to scalable backend systems.",
               },
               {
-                name: "AI & Data",
-                icon: "mdi:brain",
-                desc: "AI engineers who build custom automation — WhatsApp bots, booking systems, and NLP models trained on your business data.",
+                name: "SEO Expert Name",
+                role: "SEO Expert",
+                image: "/team-placeholder-2.svg",
+                desc: "Plans technical and content SEO strategies that improve search visibility and bring qualified customers to your business.",
               },
               {
-                name: "Design & UX",
-                icon: "mdi:palette-outline",
-                desc: "UI/UX designers who create interfaces that are beautiful AND functional. Every screen is tested for usability before development starts.",
+                name: "Automation Expert Name",
+                role: "AI Automation Expert",
+                image: "/team-placeholder-3.svg",
+                desc: "Creates practical AI workflows, assistants, and integrations that reduce repetitive work and keep operations moving.",
+              },
+              {
+                name: "Designer Name",
+                role: "UI/UX Designer",
+                image: "/team-placeholder-4.svg",
+                desc: "Designs clear, attractive experiences that make complex products simple and enjoyable for customers to use.",
               },
             ].map((team) => (
               <div
                 key={team.name}
                 className="bg-stone-50 rounded-2xl p-8 border border-stone-200/50"
               >
-                <div className="w-16 h-16 bg-brand-600/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                  <span
-                    className="iconify text-brand-600"
-                    data-icon={team.icon}
-                    data-width="32"
+                <div className="relative w-24 h-24 rounded-full overflow-hidden mx-auto mb-6 ring-4 ring-white shadow-md">
+                  <Image
+                    src={team.image}
+                    alt={`${team.name}, ${team.role}`}
+                    fill
+                    sizes="96px"
+                    className="object-cover"
                   />
                 </div>
                 <h3 className="text-lg font-medium">{team.name}</h3>
+                <p className="mt-1 text-sm font-semibold text-brand-600">
+                  {team.role}
+                </p>
                 <p className="mt-3 text-stone-500 text-sm leading-relaxed">
                   {team.desc}
                 </p>
