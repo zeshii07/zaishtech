@@ -85,7 +85,7 @@ async function routeRequest(path: string, method: string, body: any, auth: strin
 
   if (path === '/auth/login' && method === 'POST') {
     const user = await User.findOne({ email: body.email }).select('+password');
-    if (!user || !(await user.comparePassword(body.password))) {
+    if (!user || !(await (user as any).comparePassword(body.password))) {
       return { status: 401, data: { success: false, message: 'Invalid credentials.' } };
     }
     user.lastLogin = new Date();
