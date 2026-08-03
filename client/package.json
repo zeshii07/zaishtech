@@ -1,5 +1,5 @@
 {
-  "name": "nexaflow-client",
+  "name": "zaishtech-client",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -8,15 +8,20 @@
     "start": "next start"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "clsx": "^2.1.0",
     "gray-matter": "^4.0.3",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^8.24.2",
     "next": "^14.1.0",
-    "next-mdx-remote": "^6.0.0",
+    "next-mdx-remote": "^4.4.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "resend": "^2.1.0",
     "tailwind-merge": "^2.2.0"
   },
   "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20.11.0",
     "@types/react": "^18.2.0",
     "autoprefixer": "^10.4.17",
