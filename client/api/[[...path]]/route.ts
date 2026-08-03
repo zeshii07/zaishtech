@@ -1,21 +1,65 @@
 import { NextRequest, NextResponse } from 'next/server';
+import type { Mongoose } from 'mongoose';
+import type { JwtPayload } from 'jsonwebtoken';
 
-// Simple in-memory cache for Mongoose connection
-let cachedDb: any = null;
+type RequestBody = Record<string, unknown>;
 
-async function connectDB() {
-  if (cachedDb) return cachedDb;
-  
-  const mongoose = await import('mongoose');
-  
-  if (mongoose.default.connection.readyState === 1) {
-    cachedDb = mongoose.default;
-    return cachedDb;
+type RouteResult = {
+  status: number;
+  data: {
+    success: boolean;
+    message?: string;
+    data?: unknown;
+    token?: string;
+    user?: unknown;
+    environment?: string;
+  };
+};
+
+type MongooseCache = {
+  connection: Mongoose | null;
+  promise: Promise<Mongoose> | null;
+};
+
+const globalForMongoose = globalThis as typeof globalThis & {
+  mongooseCache?: MongooseCache;
+};
+
+const mongooseCache: MongooseCache =
+  globalForMongoose.mongooseCache ?? {
+    connection: null,
+    promise: null,
+  };
+
+globalForMongoose.mongooseCache = mongooseCache;
+
+async function connectDB(): Promise<Mongoose> {
+  if (mongooseCache.connection) {
+    return mongooseCache.connection;
   }
 
-  await mongoose.default.connect(process.env.MONGODB_URI || '');
-  cachedDb = mongoose.default;
-  return cachedDb;
+  const mongoUri = process.env.MONGODB_URI;
+
+  if (!mongoUri) {
+    throw new Error('MONGODB_URI environment variable is not configured.');
+  }
+
+  if (!mongooseCache.promise) {
+    const mongoose = (await import('mongoose')).default;
+
+    mongooseCache.promise = mongoose
+      .connect(mongoUri, {
+        bufferCommands: false,
+      })
+      .then(() => mongoose)
+      .catch((error) => {
+        mongooseCache.promise = null;
+        throw error;
+      });
+  }
+
+  mongooseCache.connection = await mongooseCache.promise;
+  return mongooseCache.connection;
 }
 
 export async function GET(request: NextRequest) {
@@ -34,183 +78,740 @@ export async function DELETE(request: NextRequest) {
   return handleRequest(request);
 }
 
-async function handleRequest(request: NextRequest) {
+async function handleRequest(request: NextRequest): Promise<NextResponse> {
   try {
-    // Connect to MongoDB
-    await connectDB();
-
     const url = new URL(request.url);
-    const path = url.pathname.replace('/api', '');
-    const method = request.method;
+    const path = getApiPath(url.pathname);
+    const method = request.method.toUpperCase();
 
-    // Get body for POST/PATCH
-    let body = {};
-    if (method === 'POST' || method === 'PATCH') {
-      try {
-        body = await request.json();
-      } catch { body = {}; }
+    // Health checks should not fail just because MongoDB is unavailable.
+    if (path === '/health' && method === 'GET') {
+      return NextResponse.json(
+        {
+          success: true,
+          message: 'API running',
+          environment: 'vercel-serverless',
+        },
+        { status: 200 },
+      );
     }
 
-    // Get auth header
-    const authHeader = request.headers.get('authorization') || '';
+    await connectDB();
 
-    // Route to the right handler
+    let body: RequestBody = {};
+
+    if (method === 'POST' || method === 'PATCH') {
+      const contentType = request.headers.get('content-type') ?? '';
+
+      if (contentType.includes('application/json')) {
+        try {
+          const parsedBody: unknown = await request.json();
+
+          if (
+            parsedBody !== null &&
+            typeof parsedBody === 'object' &&
+            !Array.isArray(parsedBody)
+          ) {
+            body = parsedBody as RequestBody;
+          } else {
+            return NextResponse.json(
+              {
+                success: false,
+                message: 'Request body must be a JSON object.',
+              },
+              { status: 400 },
+            );
+          }
+        } catch {
+          return NextResponse.json(
+            {
+              success: false,
+              message: 'Invalid JSON request body.',
+            },
+            { status: 400 },
+          );
+        }
+      }
+    }
+
+    const authHeader = request.headers.get('authorization') ?? '';
     const result = await routeRequest(path, method, body, authHeader);
-    return NextResponse.json(result.data, { status: result.status });
 
-  } catch (error: any) {
+    return NextResponse.json(result.data, { status: result.status });
+  } catch (error: unknown) {
+    console.error('API request failed:', error);
+
+    const message =
+      process.env.NODE_ENV === 'development'
+        ? getErrorMessage(error)
+        : 'Internal server error.';
+
     return NextResponse.json(
-      { success: false, message: error.message },
-      { status: 500 }
+      {
+        success: false,
+        message,
+      },
+      { status: 500 },
     );
   }
 }
 
-async function routeRequest(path: string, method: string, body: any, auth: string) {
-  // Import models
+function getApiPath(pathname: string): string {
+  if (pathname === '/api') {
+    return '/';
+  }
+
+  if (pathname.startsWith('/api/')) {
+    return pathname.slice(4);
+  }
+
+  return pathname;
+}
+
+async function routeRequest(
+  path: string,
+  method: string,
+  body: RequestBody,
+  authHeader: string,
+): Promise<RouteResult> {
+  const mongoose = (await import('mongoose')).default;
+
+  /*
+   * Adjust these import paths if this route file is not located where the
+   * original imports expected it to be.
+   */
   const User = (await import('../../../server/src/models/User.js')).default;
   const Inquiry = (await import('../../../server/src/models/Inquiry.js')).default;
-  const Subscriber = (await import('../../../server/src/models/Subscriber.js')).default;
+  const Subscriber = (
+    await import('../../../server/src/models/Subscriber.js')
+  ).default;
   const Project = (await import('../../../server/src/models/Project.js')).default;
 
-  // ---- AUTH ROUTES ----
+  // ---------------------------------------------------------------------------
+  // Authentication routes
+  // ---------------------------------------------------------------------------
+
   if (path === '/auth/register' && method === 'POST') {
-    const adminExists = await User.findOne({});
-    if (adminExists) return { status: 403, data: { success: false, message: 'Registration closed.' } };
-    const user = await User.create({ ...body, role: 'admin' });
-    const jwt = await import('jsonwebtoken');
-    const token = jwt.default.sign({ id: user._id }, process.env.JWT_SECRET || 'secret', { expiresIn: '7d' });
-    return { status: 201, data: { success: true, token, user } };
+    const name = getRequiredString(body.name);
+    const email = normalizeEmail(body.email);
+    const password = getRequiredString(body.password);
+
+    if (!name || !email || !password) {
+      return badRequest('Name, email, and password are required.');
+    }
+
+    const adminExists = await User.exists({});
+
+    if (adminExists) {
+      return {
+        status: 403,
+        data: {
+          success: false,
+          message: 'Registration closed.',
+        },
+      };
+    }
+
+    const existingEmail = await User.exists({ email });
+
+    if (existingEmail) {
+      return {
+        status: 409,
+        data: {
+          success: false,
+          message: 'A user with this email already exists.',
+        },
+      };
+    }
+
+    const user = await User.create({
+      ...body,
+      name,
+      email,
+      password,
+      role: 'admin',
+    });
+
+    const token = await createToken(String(user._id));
+
+    return {
+      status: 201,
+      data: {
+        success: true,
+        token,
+        user: sanitizeUser(user),
+      },
+    };
   }
 
   if (path === '/auth/login' && method === 'POST') {
-    const user = await User.findOne({ email: body.email }).select('+password');
-    if (!user || !(await (user as any).comparePassword(body.password))) {
-      return { status: 401, data: { success: false, message: 'Invalid credentials.' } };
+    const email = normalizeEmail(body.email);
+    const password = getRequiredString(body.password);
+
+    if (!email || !password) {
+      return badRequest('Email and password are required.');
     }
+
+    const user = await User.findOne({ email }).select('+password');
+
+    if (
+      !user ||
+      typeof user.comparePassword !== 'function' ||
+      !(await user.comparePassword(password))
+    ) {
+      return {
+        status: 401,
+        data: {
+          success: false,
+          message: 'Invalid credentials.',
+        },
+      };
+    }
+
     user.lastLogin = new Date();
     await user.save({ validateBeforeSave: false });
-    const jwt = await import('jsonwebtoken');
-    const token = jwt.default.sign({ id: user._id }, process.env.JWT_SECRET || 'secret', { expiresIn: '7d' });
-    return { status: 200, data: { success: true, token, user } };
+
+    const token = await createToken(String(user._id));
+
+    return {
+      status: 200,
+      data: {
+        success: true,
+        token,
+        user: sanitizeUser(user),
+      },
+    };
   }
 
   if (path === '/auth/me' && method === 'GET') {
-    const user = await verifyAuth(auth, User);
-    if (!user) return { status: 401, data: { success: false, message: 'Unauthorized.' } };
-    return { status: 200, data: { success: true, user } };
+    const user = await verifyAuth(authHeader, User);
+
+    if (!user) {
+      return unauthorized();
+    }
+
+    return {
+      status: 200,
+      data: {
+        success: true,
+        user: sanitizeUser(user),
+      },
+    };
   }
 
-  // ---- INQUIRY ROUTES ----
+  // ---------------------------------------------------------------------------
+  // Inquiry routes
+  // ---------------------------------------------------------------------------
+
   if (path === '/inquiries' && method === 'POST') {
-    const inquiry = await Inquiry.create(body);
-    return { status: 201, data: { success: true, message: 'Inquiry submitted!', data: inquiry } };
+    const name = getRequiredString(body.name);
+    const email = normalizeEmail(body.email);
+
+    if (!name || !email) {
+      return badRequest('Name and a valid email address are required.');
+    }
+
+    const inquiry = await Inquiry.create({
+      ...body,
+      name,
+      email,
+    });
+
+    return {
+      status: 201,
+      data: {
+        success: true,
+        message: 'Inquiry submitted!',
+        data: inquiry,
+      },
+    };
   }
 
   if (path === '/inquiries' && method === 'GET') {
-    const user = await verifyAuth(auth, User);
-    if (!user) return { status: 401, data: { success: false, message: 'Unauthorized.' } };
+    const user = await verifyAuth(authHeader, User);
+
+    if (!user) {
+      return unauthorized();
+    }
+
     const inquiries = await Inquiry.find().sort({ createdAt: -1 });
-    return { status: 200, data: { success: true, data: inquiries } };
+
+    return {
+      status: 200,
+      data: {
+        success: true,
+        data: inquiries,
+      },
+    };
   }
 
   if (path === '/inquiries/stats' && method === 'GET') {
-    const user = await verifyAuth(auth, User);
-    if (!user) return { status: 401, data: { success: false, message: 'Unauthorized.' } };
-    const total = await Inquiry.countDocuments();
-    const byStatus: Record<string, number> = {};
-    const agg = await Inquiry.aggregate<{ _id: string; count: number }>([{ $group: { _id: '$status', count: { $sum: 1 } } }]);
-    agg.forEach(i => { byStatus[i._id] = i.count; });
-    const recent = await Inquiry.find().sort({ createdAt: -1 }).limit(5).select('name email service status createdAt');
-    return { status: 200, data: { success: true, data: { total, byStatus, byService: {}, recent } } };
+    const user = await verifyAuth(authHeader, User);
+
+    if (!user) {
+      return unauthorized();
+    }
+
+    const [total, statusAggregation, serviceAggregation, recent] =
+      await Promise.all([
+        Inquiry.countDocuments(),
+        Inquiry.aggregate([
+          {
+            $group: {
+              _id: '$status',
+              count: { $sum: 1 },
+            },
+          },
+        ]),
+        Inquiry.aggregate([
+          {
+            $group: {
+              _id: '$service',
+              count: { $sum: 1 },
+            },
+          },
+        ]),
+        Inquiry.find()
+          .sort({ createdAt: -1 })
+          .limit(5)
+          .select('name email service status createdAt'),
+      ]);
+
+    const byStatus = aggregationToRecord(statusAggregation);
+    const byService = aggregationToRecord(serviceAggregation);
+
+    return {
+      status: 200,
+      data: {
+        success: true,
+        data: {
+          total,
+          byStatus,
+          byService,
+          recent,
+        },
+      },
+    };
   }
 
   if (path.startsWith('/inquiries/') && method === 'PATCH') {
-    const user = await verifyAuth(auth, User);
-    if (!user) return { status: 401, data: { success: false, message: 'Unauthorized.' } };
-    const id = path.split('/')[2];
+    const user = await verifyAuth(authHeader, User);
+
+    if (!user) {
+      return unauthorized();
+    }
+
+    const id = getResourceId(path, '/inquiries/');
+
+    if (!id || !mongoose.isValidObjectId(id)) {
+      return badRequest('Invalid inquiry ID.');
+    }
+
     const inquiry = await Inquiry.findById(id);
-    if (!inquiry) return { status: 404, data: { success: false, message: 'Not found.' } };
-    if (body.status) inquiry.status = body.status;
-    if (body.notes) inquiry.notes.push({ text: body.notes, addedBy: user.name });
+
+    if (!inquiry) {
+      return notFound('Inquiry not found.');
+    }
+
+    const status = getOptionalString(body.status);
+    const notes = getOptionalString(body.notes);
+
+    if (status) {
+      inquiry.status = status;
+    }
+
+    if (notes) {
+      if (!Array.isArray(inquiry.notes)) {
+        inquiry.notes = [];
+      }
+
+      inquiry.notes.push({
+        text: notes,
+        addedBy: user.name ?? 'Admin',
+      });
+    }
+
     await inquiry.save();
-    return { status: 200, data: { success: true, data: inquiry } };
+
+    return {
+      status: 200,
+      data: {
+        success: true,
+        data: inquiry,
+      },
+    };
   }
 
   if (path.startsWith('/inquiries/') && method === 'DELETE') {
-    const user = await verifyAuth(auth, User);
-    if (!user) return { status: 401, data: { success: false, message: 'Unauthorized.' } };
-    const id = path.split('/')[2];
-    await Inquiry.findByIdAndDelete(id);
-    return { status: 200, data: { success: true, message: 'Deleted.' } };
+    const user = await verifyAuth(authHeader, User);
+
+    if (!user) {
+      return unauthorized();
+    }
+
+    const id = getResourceId(path, '/inquiries/');
+
+    if (!id || !mongoose.isValidObjectId(id)) {
+      return badRequest('Invalid inquiry ID.');
+    }
+
+    const inquiry = await Inquiry.findByIdAndDelete(id);
+
+    if (!inquiry) {
+      return notFound('Inquiry not found.');
+    }
+
+    return {
+      status: 200,
+      data: {
+        success: true,
+        message: 'Inquiry deleted.',
+      },
+    };
   }
 
-  // ---- SUBSCRIBER ROUTES ----
+  // ---------------------------------------------------------------------------
+  // Subscriber routes
+  // ---------------------------------------------------------------------------
+
   if (path === '/subscribers' && method === 'POST') {
-    await Subscriber.findOneAndUpdate({ email: body.email }, { email: body.email, isActive: true }, { upsert: true });
-    return { status: 200, data: { success: true, message: 'Subscribed!' } };
+    const email = normalizeEmail(body.email);
+
+    if (!email) {
+      return badRequest('A valid email address is required.');
+    }
+
+    await Subscriber.findOneAndUpdate(
+      { email },
+      {
+        $set: {
+          email,
+          isActive: true,
+        },
+        $setOnInsert: {
+          createdAt: new Date(),
+        },
+      },
+      {
+        upsert: true,
+        new: true,
+        runValidators: true,
+        setDefaultsOnInsert: true,
+      },
+    );
+
+    return {
+      status: 200,
+      data: {
+        success: true,
+        message: 'Subscribed!',
+      },
+    };
   }
 
   if (path === '/subscribers' && method === 'GET') {
-    const user = await verifyAuth(auth, User);
-    if (!user) return { status: 401, data: { success: false, message: 'Unauthorized.' } };
+    const user = await verifyAuth(authHeader, User);
+
+    if (!user) {
+      return unauthorized();
+    }
+
     const subscribers = await Subscriber.find().sort({ createdAt: -1 });
-    return { status: 200, data: { success: true, data: subscribers } };
+
+    return {
+      status: 200,
+      data: {
+        success: true,
+        data: subscribers,
+      },
+    };
   }
 
-  // ---- PROJECT ROUTES ----
+  // ---------------------------------------------------------------------------
+  // Project routes
+  // ---------------------------------------------------------------------------
+
   if (path === '/projects/featured' && method === 'GET') {
-    const projects = await Project.find({ featured: true });
-    return { status: 200, data: { success: true, data: projects } };
+    const projects = await Project.find({ featured: true }).sort({
+      createdAt: -1,
+    });
+
+    return {
+      status: 200,
+      data: {
+        success: true,
+        data: projects,
+      },
+    };
   }
 
   if (path === '/projects' && method === 'GET') {
-    const user = await verifyAuth(auth, User);
-    if (!user) return { status: 401, data: { success: false, message: 'Unauthorized.' } };
+    const user = await verifyAuth(authHeader, User);
+
+    if (!user) {
+      return unauthorized();
+    }
+
     const projects = await Project.find().sort({ createdAt: -1 });
-    return { status: 200, data: { success: true, data: projects } };
+
+    return {
+      status: 200,
+      data: {
+        success: true,
+        data: projects,
+      },
+    };
   }
 
   if (path === '/projects' && method === 'POST') {
-    const user = await verifyAuth(auth, User);
-    if (!user) return { status: 401, data: { success: false, message: 'Unauthorized.' } };
+    const user = await verifyAuth(authHeader, User);
+
+    if (!user) {
+      return unauthorized();
+    }
+
     const project = await Project.create(body);
-    return { status: 201, data: { success: true, data: project } };
+
+    return {
+      status: 201,
+      data: {
+        success: true,
+        data: project,
+      },
+    };
   }
 
   if (path.startsWith('/projects/') && method === 'PATCH') {
-    const user = await verifyAuth(auth, User);
-    if (!user) return { status: 401, data: { success: false, message: 'Unauthorized.' } };
-    const id = path.split('/')[2];
-    const project = await Project.findByIdAndUpdate(id, body, { new: true });
-    return { status: 200, data: { success: true, data: project } };
+    const user = await verifyAuth(authHeader, User);
+
+    if (!user) {
+      return unauthorized();
+    }
+
+    const id = getResourceId(path, '/projects/');
+
+    if (!id || !mongoose.isValidObjectId(id)) {
+      return badRequest('Invalid project ID.');
+    }
+
+    const project = await Project.findByIdAndUpdate(
+      id,
+      {
+        $set: body,
+      },
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
+
+    if (!project) {
+      return notFound('Project not found.');
+    }
+
+    return {
+      status: 200,
+      data: {
+        success: true,
+        data: project,
+      },
+    };
   }
 
   if (path.startsWith('/projects/') && method === 'DELETE') {
-    const user = await verifyAuth(auth, User);
-    if (!user) return { status: 401, data: { success: false, message: 'Unauthorized.' } };
-    const id = path.split('/')[2];
-    await Project.findByIdAndDelete(id);
-    return { status: 200, data: { success: true, message: 'Deleted.' } };
+    const user = await verifyAuth(authHeader, User);
+
+    if (!user) {
+      return unauthorized();
+    }
+
+    const id = getResourceId(path, '/projects/');
+
+    if (!id || !mongoose.isValidObjectId(id)) {
+      return badRequest('Invalid project ID.');
+    }
+
+    const project = await Project.findByIdAndDelete(id);
+
+    if (!project) {
+      return notFound('Project not found.');
+    }
+
+    return {
+      status: 200,
+      data: {
+        success: true,
+        message: 'Project deleted.',
+      },
+    };
   }
 
-  // ---- HEALTH ----
-  if (path === '/health') {
-    return { status: 200, data: { success: true, message: 'API running', environment: 'vercel-serverless' } };
-  }
-
-  return { status: 404, data: { success: false, message: 'Route not found.' } };
+  return {
+    status: 404,
+    data: {
+      success: false,
+      message: 'Route not found.',
+    },
+  };
 }
 
-async function verifyAuth(authHeader: string, User: any) {
-  if (!authHeader?.startsWith('Bearer')) return null;
-  const jwt = await import('jsonwebtoken');
+async function createToken(userId: string): Promise<string> {
+  const jwtSecret = process.env.JWT_SECRET;
+
+  if (!jwtSecret) {
+    throw new Error('JWT_SECRET environment variable is not configured.');
+  }
+
+  const jwt = (await import('jsonwebtoken')).default;
+
+  return jwt.sign(
+    {
+      id: userId,
+    },
+    jwtSecret,
+    {
+      expiresIn: '7d',
+    },
+  );
+}
+
+async function verifyAuth(authHeader: string, User: any): Promise<any | null> {
+  const match = authHeader.match(/^Bearer\s+(.+)$/i);
+
+  if (!match) {
+    return null;
+  }
+
+  const token = match[1]?.trim();
+  const jwtSecret = process.env.JWT_SECRET;
+
+  if (!token || !jwtSecret) {
+    return null;
+  }
+
   try {
-    const decoded = jwt.default.verify(authHeader.split(' ')[1], process.env.JWT_SECRET || 'secret');
-    if (typeof decoded === 'string' || !decoded || !('id' in decoded)) return null;
-    const user = await User.findById((decoded as { id?: string }).id);
-    return user;
+    const jwt = (await import('jsonwebtoken')).default;
+    const decoded = jwt.verify(token, jwtSecret);
+
+    if (
+      typeof decoded === 'string' ||
+      !decoded ||
+      typeof decoded !== 'object'
+    ) {
+      return null;
+    }
+
+    const payload = decoded as JwtPayload & {
+      id?: string;
+    };
+
+    if (!payload.id) {
+      return null;
+    }
+
+    return await User.findById(payload.id).select('-password');
   } catch {
     return null;
   }
+}
+
+function sanitizeUser(user: any): Record<string, unknown> | null {
+  if (!user) {
+    return null;
+  }
+
+  const plainUser =
+    typeof user.toObject === 'function'
+      ? user.toObject()
+      : { ...user };
+
+  delete plainUser.password;
+  delete plainUser.__v;
+
+  return plainUser;
+}
+
+function aggregationToRecord(
+  aggregation: Array<{ _id?: unknown; count?: unknown }>,
+): Record<string, number> {
+  const result: Record<string, number> = {};
+
+  for (const item of aggregation) {
+    if (typeof item._id !== 'string' || typeof item.count !== 'number') {
+      continue;
+    }
+
+    result[item._id] = item.count;
+  }
+
+  return result;
+}
+
+function getResourceId(path: string, prefix: string): string | null {
+  if (!path.startsWith(prefix)) {
+    return null;
+  }
+
+  const id = path.slice(prefix.length).split('/')[0]?.trim();
+
+  return id || null;
+}
+
+function getRequiredString(value: unknown): string | null {
+  if (typeof value !== 'string') {
+    return null;
+  }
+
+  const cleaned = value.trim();
+  return cleaned.length > 0 ? cleaned : null;
+}
+
+function getOptionalString(value: unknown): string | null {
+  return getRequiredString(value);
+}
+
+function normalizeEmail(value: unknown): string | null {
+  const email = getRequiredString(value)?.toLowerCase();
+
+  if (!email) {
+    return null;
+  }
+
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  return emailPattern.test(email) ? email : null;
+}
+
+function badRequest(message: string): RouteResult {
+  return {
+    status: 400,
+    data: {
+      success: false,
+      message,
+    },
+  };
+}
+
+function unauthorized(): RouteResult {
+  return {
+    status: 401,
+    data: {
+      success: false,
+      message: 'Unauthorized.',
+    },
+  };
+}
+
+function notFound(message: string): RouteResult {
+  return {
+    status: 404,
+    data: {
+      success: false,
+      message,
+    },
+  };
+}
+
+function getErrorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : 'Unknown server error.';
 }
