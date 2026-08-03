@@ -118,9 +118,9 @@ async function routeRequest(path: string, method: string, body: any, auth: strin
     const user = await verifyAuth(auth, User);
     if (!user) return { status: 401, data: { success: false, message: 'Unauthorized.' } };
     const total = await Inquiry.countDocuments();
-    const byStatus = {};
-    const agg = await Inquiry.aggregate([{ $group: { _id: '$status', count: { $sum: 1 } }]);
-    agg.forEach(i => byStatus[i._id] = i.count);
+    const byStatus: Record<string, number> = {};
+    const agg = await Inquiry.aggregate<{ _id: string; count: number }>([{ $group: { _id: '$status', count: { $sum: 1 } } }]);
+    agg.forEach(i => { byStatus[i._id] = i.count; });
     const recent = await Inquiry.find().sort({ createdAt: -1 }).limit(5).select('name email service status createdAt');
     return { status: 200, data: { success: true, data: { total, byStatus, byService: {}, recent } } };
   }
@@ -207,7 +207,8 @@ async function verifyAuth(authHeader: string, User: any) {
   const jwt = await import('jsonwebtoken');
   try {
     const decoded = jwt.default.verify(authHeader.split(' ')[1], process.env.JWT_SECRET || 'secret');
-    const user = await User.findById(decoded.id);
+    if (typeof decoded === 'string' || !decoded || !('id' in decoded)) return null;
+    const user = await User.findById((decoded as { id?: string }).id);
     return user;
   } catch {
     return null;
