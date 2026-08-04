@@ -6,6 +6,8 @@ import TrustedBy from '@/components/sections/TrustedBy';
 import Services from '@/components/sections/Services';
 import Process from '@/components/sections/Process';
 import FeaturedWork from '@/components/sections/FeaturedWork';
+import Industries from '@/components/sections/Industries';
+import TechnologyStack from '@/components/sections/TechnologyStack';
 import WhyChooseUs from '@/components/sections/WhyChooseUs';
 import Testimonials from '@/components/sections/Testimonials';
 import Pricing from '@/components/sections/Pricing';
@@ -22,6 +24,8 @@ export default function HomeContent() {
       <Services />
       <Process />
       <FeaturedWork />
+      <Industries />
+      <TechnologyStack />
       <WhyChooseUs />
       <Testimonials />
       <Pricing />
@@ -30,4 +34,4 @@ export default function HomeContent() {
       <Footer />
     </main>
   );
-}  
+}

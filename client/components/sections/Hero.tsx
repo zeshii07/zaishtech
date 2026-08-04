@@ -11,9 +11,9 @@ export default function Hero() {
       (entries) => {
         if (entries[0].isIntersecting && !statsAnimated) {
           setStatsAnimated(true);
-          animateCounter('stat-projects', 120, '+');
-          animateCounter('stat-clients', 45, '+');
-          animateCounter('stat-uptime', 99.9, '%');
+          animateCounter('stat-projects', 4, '+');
+          animateCounter('stat-clients', 2, '');
+          animateCounter('stat-uptime', 3, '');
         }
       },
       { threshold: 0.5 }
@@ -39,8 +39,8 @@ export default function Hero() {
       {/* Background */}
       <div className="absolute inset-0">
         <img
-          src="https://picsum.photos/seed/ZaishTech-hero/1920/1080.jpg"
-          alt="Tech Background"
+          src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1920&q=85"
+          alt="Software team collaborating in a modern workspace"
           className="w-full h-full object-cover opacity-30"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-stone-900/80 via-stone-900/60 to-stone-900" />
@@ -75,7 +75,7 @@ export default function Hero() {
             </h1>
 
             <p className="animate-fade-in-up mt-8 text-lg text-stone-400 leading-relaxed max-w-xl" style={{ animationDelay: '200ms' }}>
-              Custom software development, AI-powered automation, and enterprise portals — engineered to transform how your business operates.
+              Websites, mobile apps, AI assistants, and business automation built by one focused software team—from discovery to launch.
             </p>
 
             <div className="animate-fade-in-up mt-10 flex flex-col sm:flex-row gap-4" style={{ animationDelay: '300ms' }}>
@@ -91,15 +91,15 @@ export default function Hero() {
             <div ref={statsRef} className="animate-fade-in-up mt-14 flex gap-10" style={{ animationDelay: '400ms' }}>
               <div>
                 <div className="text-3xl font-semibold text-white" id="stat-projects">0</div>
-                <div className="text-xs font-bold uppercase tracking-widest text-stone-500 mt-1">Projects Delivered</div>
+                <div className="text-xs font-bold uppercase tracking-widest text-stone-500 mt-1">Live Solutions</div>
               </div>
               <div>
                 <div className="text-3xl font-semibold text-white" id="stat-clients">0</div>
-                <div className="text-xs font-bold uppercase tracking-widest text-stone-500 mt-1">Happy Clients</div>
+                <div className="text-xs font-bold uppercase tracking-widest text-stone-500 mt-1">Active Builds</div>
               </div>
               <div>
                 <div className="text-3xl font-semibold text-white" id="stat-uptime">0</div>
-                <div className="text-xs font-bold uppercase tracking-widest text-stone-500 mt-1">Uptime %</div>
+                <div className="text-xs font-bold uppercase tracking-widest text-stone-500 mt-1">Core Platforms</div>
               </div>
             </div>
           </div>
@@ -151,6 +151,6 @@ function animateCounter(elementId: string, target: number, suffix: string) {
       current = target;
       clearInterval(timer);
     }
-    el.textContent = (target === 99.9 ? current.toFixed(1) : Math.floor(current)) + suffix;
+    el.textContent = Math.floor(current) + suffix;
   }, 25);
 }

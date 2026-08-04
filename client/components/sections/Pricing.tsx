@@ -91,7 +91,7 @@ export default function Pricing() {
             <div className="mt-6 space-y-3">
               {[
                 { t: 'Everything in Professional', c: true },
-                { t: 'Native Android app', c: true },
+                { t: 'Mobile app development', c: true },
                 { t: 'Multi-tenant architecture', c: true },
                 { t: 'DevOps & CI/CD setup', c: true },
                 { t: 'Dedicated project manager', c: true },

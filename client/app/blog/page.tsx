@@ -17,7 +17,7 @@ export default function BlogPage() {
       <Navbar />
 
       {/* Hero */}
-      <section className="py-32 md:py-40 bg-stone-900 text-white relative overflow-hidden">
+      <section className="py-32 md:py-40 bg-stone-900 text-white relative overflow-hidden bg-cover bg-center" style={{backgroundImage:"linear-gradient(rgba(28,25,23,.88),rgba(28,25,23,.88)),url('https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=1800&q=85')"}}>
         <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
         <div className="absolute top-0 right-0 w-96 h-96 bg-brand-600/10 rounded-full blur-3xl" />
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />

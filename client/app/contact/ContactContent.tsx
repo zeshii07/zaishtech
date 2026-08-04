@@ -31,7 +31,7 @@ export default function ContactContent() {
   return (
     <>
       {/* Hero */}
-      <section className="py-32 md:py-40 bg-stone-900 text-white relative overflow-hidden">
+      <section className="py-32 md:py-40 bg-stone-900 text-white relative overflow-hidden bg-cover bg-center" style={{backgroundImage:"linear-gradient(rgba(28,25,23,.88),rgba(28,25,23,.88)),url('https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1800&q=85')"}}>
         <div className="absolute top-0 right-0 w-96 h-96 bg-brand-600/10 rounded-full blur-3xl" />
         <div className="relative max-w-4xl mx-auto px-6 md:px-12 text-center">
           <span className="text-xs font-bold uppercase tracking-widest text-brand-400">Contact Us</span>
@@ -53,7 +53,7 @@ export default function ContactContent() {
             <div>
               <h2 className="text-2xl md:text-3xl font-medium tracking-tight">Get in Touch</h2>
               <p className="mt-4 text-stone-500 leading-relaxed">
-                Whether you need a <Link href="/services" className="text-brand-600 hover:underline">custom web app</Link>, a <Link href="/services" className="text-brand-600 hover:underline">WhatsApp automation system</Link>, or a <Link href="/services" className="text-brand-600 hover:underline">native Android application</Link>, we&apos;re ready to help.
+                Whether you need a <Link href="/services" className="text-brand-600 hover:underline">custom web app</Link>, a <Link href="/services" className="text-brand-600 hover:underline">WhatsApp automation system</Link>, or a <Link href="/services" className="text-brand-600 hover:underline">mobile application</Link>, we&apos;re ready to help.
               </p>
 
               <div className="mt-12 space-y-8">
@@ -181,7 +181,7 @@ export default function ContactContent() {
                       <option value="">Select a service</option>
                       <option>Custom Software Development</option>
                       <option>Website / Web App Development</option>
-                      <option>Native Android App</option>
+                      <option>Mobile App Development</option>
                       <option>AI & Automation (WhatsApp Bot, Auto-Booking)</option>
                       <option>Portal / Inventory Management</option>
                       <option>Multiple Services</option>

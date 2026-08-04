@@ -14,7 +14,7 @@ export default function PricingPage() {
     <main>
       <Navbar />
 
-      <section className="py-32 md:py-40 bg-stone-900 text-white relative overflow-hidden">
+      <section className="py-32 md:py-40 bg-stone-900 text-white relative overflow-hidden bg-cover bg-center" style={{backgroundImage:"linear-gradient(rgba(28,25,23,.9),rgba(28,25,23,.9)),url('https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1800&q=85')"}}>
         <div className="absolute top-0 right-0 w-96 h-96 bg-brand-600/10 rounded-full blur-3xl" />
         <div className="relative max-w-4xl mx-auto px-6 md:px-12 text-center">
           <span className="text-xs font-bold uppercase tracking-widest text-brand-400">Pricing</span>
@@ -67,9 +67,9 @@ export default function PricingPage() {
             <div className="bg-stone-50 rounded-2xl p-8 border border-stone-200/50 hover:border-brand-200 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
               <div className="text-xs font-bold uppercase tracking-widest text-stone-400">Enterprise</div>
               <div className="mt-4 flex items-baseline gap-1"><span className="text-4xl font-semibold">Custom</span></div>
-              <p className="mt-3 text-stone-500 text-sm leading-relaxed">Large platforms, <Link href="/services#android" className="text-brand-600 hover:underline">Android apps</Link>, and enterprise ecosystems.</p>
+              <p className="mt-3 text-stone-500 text-sm leading-relaxed">Large platforms, <Link href="/services#mobile-apps" className="text-brand-600 hover:underline">mobile apps</Link>, and connected business ecosystems.</p>
               <div className="mt-6 space-y-3">
-                {['Everything in Professional','Native Android app','Multi-tenant architecture','DevOps & CI/CD setup','Dedicated project manager','90-day support & SLA'].map((item)=>(
+                {['Everything in Professional','Mobile app development','Multi-tenant architecture','DevOps & CI/CD setup','Dedicated project manager','90-day support & SLA'].map((item)=>(
                   <div key={item} className="flex items-center gap-3 text-sm">
                     <span className="iconify text-emerald-500" data-icon="mdi:check-circle" data-width="18" /><span>{item}</span>
                   </div>

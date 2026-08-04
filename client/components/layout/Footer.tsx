@@ -128,11 +128,20 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/services#android"
+                  href="/services#mobile-apps"
                   className="text-sm text-stone-400 hover:text-white transition-colors"
                 >
-                  Android App Development
+                  Mobile App Development
                 </Link>
+              </li>
+              <li>
+                <Link href="/work" className="text-sm text-stone-400 hover:text-white transition-colors">Our Work</Link>
+              </li>
+              <li>
+                <Link href="/industries" className="text-sm text-stone-400 hover:text-white transition-colors">Industries</Link>
+              </li>
+              <li>
+                <Link href="/careers" className="text-sm text-stone-400 hover:text-white transition-colors">Careers</Link>
               </li>
               <li>
                 <Link
@@ -199,14 +208,6 @@ export default function Footer() {
                   Contact
                 </Link>
               </li>
-              <li>
-                <Link
-                  href="/login"
-                  className="text-sm text-stone-500 hover:text-stone-300 transition-colors"
-                >
-                  Admin
-                </Link>
-              </li>
             </ul>
           </div>
 
@@ -246,22 +247,16 @@ export default function Footer() {
           </p>
           <div className="flex gap-6">
             <Link
-              href="#"
+              href="/privacy-policy"
               className="text-xs text-stone-500 hover:text-stone-300"
             >
               Privacy
             </Link>
             <Link
-              href="#"
+              href="/terms"
               className="text-xs text-stone-500 hover:text-stone-300"
             >
               Terms
-            </Link>
-            <Link
-              href="/login"
-              className="text-xs text-stone-600 hover:text-stone-300"
-            >
-              Admin
             </Link>
           </div>
         </div>

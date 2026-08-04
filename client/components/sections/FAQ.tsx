@@ -15,9 +15,9 @@ export default function FAQ() {
   }, []);
 
   const faqs = [
-    { q: 'How long does a typical project take?', a: 'MVPs and landing pages: 2-4 weeks. Full-stack web apps: 6-10 weeks. Native Android apps: 8-14 weeks. Enterprise platforms with AI: 12-20 weeks. We provide a detailed timeline during the discovery call.' },
+    { q: 'How long does a typical project take?', a: 'Focused websites and prototypes may take 2-4 weeks. Full-stack web and mobile products commonly take 6-14 weeks, while larger platforms and AI workflows depend on integrations and scope. We provide a milestone-based estimate after discovery.' },
     { q: 'Do you work with international clients?', a: 'Absolutely. We work with clients across the US, UK, Middle East, and Asia. We use async communication tools (Slack, Notion, Loom) and schedule calls in your timezone.' },
-    { q: 'What tech stack do you use?', a: 'Frontend: Next.js, React, Tailwind CSS. Backend: Node.js, Express.js, Python. Database: PostgreSQL, MongoDB, Redis. Mobile: Kotlin (Android native). AI: OpenAI, LangChain, custom models. Cloud: AWS, Vercel, DigitalOcean.' },
+    { q: 'What tech stack do you use?', a: 'Our core stack includes Next.js and React for web products, React Native for mobile apps, Express.js and Node.js for APIs, MongoDB and PostgreSQL for data, and modern AI and WhatsApp integrations for automation.' },
     { q: 'How does the WhatsApp auto-reply system work?', a: 'We integrate with the WhatsApp Business API, connect it to an AI model trained on your business data (FAQs, product catalog, pricing), and set up intelligent routing. It can handle inquiries, book appointments, and escalate to humans when needed. You get a dashboard to monitor all conversations.' },
     { q: 'Do I own the source code?', a: 'Yes, 100%. You receive full source code, documentation, deployment guides, and all intellectual property rights. We never lock you in — you\'re free to maintain, modify, or scale the project with any team.' },
   ];

@@ -118,7 +118,7 @@ export default function CTA() {
                     <option value="">Select a service</option>
                     <option>Custom Software Development</option>
                     <option>Website / Web App Development</option>
-                    <option>Native Android App</option>
+                    <option>Mobile App Development</option>
                     <option>AI & Automation</option>
                     <option>Portal / Inventory Management</option>
                     <option>Multiple Services</option>

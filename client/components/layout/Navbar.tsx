@@ -16,10 +16,11 @@ export default function Navbar() {
  const links = [
   { href: '/', label: 'Home' },
   { href: '/services', label: 'Services' },
-  { href: '/about', label: 'About' },
-  { href: '/blog', label: 'Blog' },          // ← ADD THIS LINE
-  { href: '/pricing', label: 'Pricing' },
-  { href: '/contact', label: 'Contact' },
+  { href: '/work', label: 'Work' },
+  { href: '/industries', label: 'Industries' },
+  { href: '/process', label: 'Process' },
+  { href: '/about', label: 'Company' },
+  { href: '/blog', label: 'Blog' },
 ];
 
   return (
@@ -55,7 +56,6 @@ export default function Navbar() {
 
           {/* CTA */}
           <div className="hidden md:flex items-center gap-4">
-            <Link href="/login" className={`text-xs font-medium transition-colors opacity-50 hover:opacity-100 ${scrolled ? 'text-stone-500' : 'text-white/60'}`}>Admin</Link>
             <Link href="/contact" className={`text-sm font-medium px-6 py-3 rounded-full transition-all duration-300 hover:-translate-y-0.5 shadow-lg ${scrolled ? 'bg-stone-900 text-white shadow-stone-900/10' : 'bg-brand-600 text-white shadow-brand-600/30'}`}>
               Start a Project
             </Link>
@@ -78,7 +78,6 @@ export default function Navbar() {
               <Link key={l.href} href={l.href} className="block text-sm font-medium text-stone-600 hover:text-brand-600 py-2" onClick={() => setMobileOpen(false)}>{l.label}</Link>
             ))}
             <Link href="/contact" className="block bg-brand-600 text-white text-sm font-medium px-6 py-3 rounded-full text-center mt-4" onClick={() => setMobileOpen(false)}>Start a Project</Link>
-            <Link href="/login" className="block text-xs text-stone-400 text-center py-2" onClick={() => setMobileOpen(false)}>Admin Login</Link>
           </div>
         </div>
       )}

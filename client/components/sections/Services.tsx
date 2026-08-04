@@ -64,12 +64,12 @@ export default function Services() {
             <div className="w-14 h-14 bg-brand-600/10 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-5 transition-transform">
               <span className="iconify text-brand-600" data-icon="mdi:android" data-width="28" />
             </div>
-            <h3 className="text-xl font-medium tracking-tight">Native Android Development</h3>
+            <h3 className="text-xl font-medium tracking-tight">Mobile App Development</h3>
             <p className="mt-3 text-stone-500 leading-relaxed text-sm">
-              Production-quality native Android apps with Kotlin, delivering buttery-smooth UX and deep hardware integration.
+              Cross-platform mobile products built with React Native, backed by secure APIs and designed around real user workflows.
             </p>
             <div className="mt-6 flex flex-wrap gap-2">
-              {['Kotlin', 'Jetpack Compose', 'Play Store'].map((t) => (
+              {['React Native', 'iOS & Android', 'App APIs'].map((t) => (
                 <span key={t} className="text-xs font-medium bg-white border border-stone-200 rounded-full px-3 py-1 text-stone-600">{t}</span>
               ))}
             </div>

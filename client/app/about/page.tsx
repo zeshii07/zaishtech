@@ -23,7 +23,7 @@ export default function AboutPage() {
       <Navbar />
 
       {/* Hero */}
-      <section className="py-32 md:py-40 bg-stone-900 text-white relative overflow-hidden">
+      <section className="py-32 md:py-40 bg-stone-900 text-white relative overflow-hidden bg-cover bg-center" style={{backgroundImage:"linear-gradient(rgba(28,25,23,.88),rgba(28,25,23,.88)),url('https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1800&q=85')"}}>
         <div
           className="absolute inset-0 opacity-5"
           style={{
@@ -124,10 +124,10 @@ export default function AboutPage() {
                   </Link>{" "}
                   across multiple warehouses, or a{" "}
                   <Link
-                    href="/services#android"
+                    href="/services#mobile-apps"
                     className="text-brand-600 hover:underline"
                   >
-                    native Android app
+                    mobile app
                   </Link>{" "}
                   with 50K+ downloads — we ship production-grade software, not
                   prototypes.

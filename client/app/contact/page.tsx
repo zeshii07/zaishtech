@@ -5,7 +5,7 @@ import ContactContent from './ContactContent';
 
 export const metadata: Metadata = {
   title: 'Contact ZaishTech — Free Consultation for Custom Software & AI Automation',
-  description: 'Contact ZaishTech for a free consultation on custom software development, web apps, Android apps, AI automation, WhatsApp bots, and inventory management systems.',
+  description: 'Contact ZaishTech for a consultation on custom software, websites, mobile apps, AI assistants, WhatsApp automation, and business platforms.',
   keywords: ['contact software developer', 'free consultation', 'hire software team', 'custom software quote'],
 };
 

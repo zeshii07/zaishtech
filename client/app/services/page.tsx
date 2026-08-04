@@ -4,9 +4,9 @@ import Footer from '@/components/layout/Footer';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Services — Custom Software, Web Apps, Android, AI Automation & Inventory Systems',
-  description: 'ZaishTech provides custom software development, web application development, native Android apps, AI & WhatsApp automation, and portal/inventory management systems.',
-  keywords: ['custom software development services', 'web app development', 'Android app development', 'AI automation services', 'WhatsApp auto reply bot', 'inventory management system'],
+  title: 'Services — Custom Software, Web, Mobile & AI Automation',
+  description: 'ZaishTech provides custom software, web applications, React Native mobile apps, AI agents, WhatsApp automation, and business portals.',
+  keywords: ['custom software development services', 'web app development', 'mobile app development', 'React Native development', 'AI automation services', 'WhatsApp automation'],
 };
 
 export default function ServicesPage() {
@@ -34,13 +34,13 @@ export default function ServicesPage() {
       timeline: '2-8 weeks',
     },
     {
-      slug: 'android',
-      icon: 'mdi:android',
-      title: 'Native Android App Development',
-      subtitle: 'Production-quality apps with buttery-smooth UX',
-      description: 'We build native Android applications using Kotlin and Jetpack Compose — delivering apps that feel fast, integrate deeply with device hardware, and rank well on the Play Store.',
-      features: ['Native Kotlin development', 'Jetpack Compose UI', 'Firebase integration', 'Play Store optimization', 'Push notifications & deep links', 'Offline-first architecture'],
-      tech: ['Kotlin', 'Jetpack Compose', 'Firebase', 'Room DB', 'Coroutines', 'Play Console'],
+      slug: 'mobile-apps',
+      icon: 'mdi:cellphone',
+      title: 'Mobile App Development',
+      subtitle: 'One product experience across iOS and Android',
+      description: 'We build React Native mobile applications backed by secure APIs, with thoughtful user journeys, reliable state management, and deployment-ready foundations.',
+      features: ['React Native development', 'iOS & Android delivery', 'Express.js APIs', 'Push notifications', 'AI feature integration', 'Store release support'],
+      tech: ['React Native', 'TypeScript', 'Express.js', 'MongoDB', 'Push Notifications', 'App Stores'],
       price: 'From $10,000',
       timeline: '8-14 weeks',
     },
@@ -74,7 +74,7 @@ export default function ServicesPage() {
       <Navbar />
 
       {/* Hero */}
-      <section className="py-32 md:py-40 bg-stone-900 text-white relative overflow-hidden">
+      <section className="py-32 md:py-40 bg-stone-900 text-white relative overflow-hidden bg-cover bg-center" style={{backgroundImage:"linear-gradient(rgba(28,25,23,.88),rgba(28,25,23,.88)),url('https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=1800&q=85')"}}>
         <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
         <div className="absolute top-0 right-0 w-96 h-96 bg-brand-600/10 rounded-full blur-3xl" />
         <div className="relative max-w-4xl mx-auto px-6 md:px-12 text-center">

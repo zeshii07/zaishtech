@@ -1,0 +1,17 @@
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import Navbar from '@/components/layout/Navbar';
+import Footer from '@/components/layout/Footer';
+import { portfolioProjects, projectImages } from '@/lib/portfolio';
+
+export const metadata: Metadata = { title: 'Our Work — Websites, Mobile Apps & AI Automation | ZaishTech', description: 'Explore real client work, products in development, and clearly labeled software concepts from ZaishTech.' };
+
+const statusStyles = { Live: 'bg-emerald-500 text-white', Product: 'bg-blue-500 text-white', 'In Development': 'bg-amber-400 text-stone-950', 'Concept Project': 'bg-white/90 text-stone-700' };
+
+export default function WorkPage() {
+  return <main><Navbar />
+    <section className="relative pt-36 pb-24 text-white overflow-hidden"><img src="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1800&q=85" alt="Software product team collaborating" className="absolute inset-0 w-full h-full object-cover"/><div className="absolute inset-0 bg-gradient-to-r from-stone-950 via-stone-950/85 to-stone-950/60"/><div className="relative max-w-5xl mx-auto px-6"><span className="text-xs uppercase tracking-widest text-brand-400 font-bold">Portfolio</span><h1 className="mt-4 text-4xl md:text-6xl font-medium">Work grounded in<br/><span className="font-serif italic text-stone-300">real operational needs</span></h1><p className="mt-6 text-stone-300 max-w-2xl">Real client work, original products, active builds, and transparent concept explorations—clearly identified.</p></div></section>
+    <section className="py-24 bg-stone-50"><div className="max-w-7xl mx-auto px-6 md:px-12"><div className="grid md:grid-cols-2 gap-8">{portfolioProjects.map((project,index)=><Link href={`/work/${project.slug}`} key={project.slug} className={`group relative min-h-[460px] rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-500 ${index===0||index===3?'lg:min-h-[540px]':''}`}><img src={projectImages[project.slug]} alt={`${project.title} visual`} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"/><div className="absolute inset-0 bg-gradient-to-t from-black via-black/35 to-black/5"/><div className="absolute inset-x-0 top-0 p-6 flex justify-between items-start gap-4"><span className="text-xs font-bold uppercase tracking-widest text-white/90 bg-black/30 backdrop-blur-md px-3 py-2 rounded-full">{project.industry}</span><span className={`text-[11px] font-semibold px-3 py-2 rounded-full shadow ${statusStyles[project.status]}`}>{project.status}</span></div><div className="absolute inset-x-0 bottom-0 p-7 md:p-9 text-white"><div className="text-xs uppercase tracking-widest text-brand-300 font-bold">{project.service}</div><div className="mt-3 flex items-end justify-between gap-5"><div><h2 className="text-2xl md:text-3xl font-medium">{project.title}</h2><p className="mt-3 text-sm text-stone-200 leading-relaxed max-w-xl line-clamp-2">{project.summary}</p></div><div className="shrink-0 w-12 h-12 rounded-full bg-white text-stone-900 flex items-center justify-center group-hover:bg-brand-600 group-hover:text-white group-hover:translate-x-1 transition-all">→</div></div><div className="mt-5 flex flex-wrap gap-2">{project.tech.slice(0,3).map(tech=><span key={tech} className="text-xs bg-white/10 backdrop-blur border border-white/15 rounded-full px-3 py-1.5">{tech}</span>)}</div></div></Link>)}</div></div></section>
+    <Footer />
+  </main>;
+}
