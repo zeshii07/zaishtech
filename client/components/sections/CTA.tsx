@@ -62,7 +62,7 @@ export default function CTA() {
                 </div>
                 <div>
                   <div className="text-xs font-bold uppercase tracking-widest text-stone-400">Email</div>
-                  <div className="text-sm font-medium mt-1">hello@ZaishTech.dev</div>
+                  <div className="text-sm font-medium mt-1">zaishtech@gmail.com</div>
                 </div>
               </div>
               <div className="flex items-center gap-4">
@@ -71,7 +71,7 @@ export default function CTA() {
                 </div>
                 <div>
                   <div className="text-xs font-bold uppercase tracking-widest text-stone-400">WhatsApp</div>
-                  <div className="text-sm font-medium mt-1">+1 (555) 123-4567</div>
+                  <div className="text-sm font-medium mt-1">03019299608</div>
                 </div>
               </div>
               <div className="flex items-center gap-4">
