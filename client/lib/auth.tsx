@@ -21,7 +21,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const token = localStorage.getItem('nexaflow_token');
+        const token = localStorage.getItem('ZaishTech_token');
         if (token) {
           api.setToken(token);
           const res = await api.getMe();
@@ -29,7 +29,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       } catch {
         api.clearToken();
-        localStorage.removeItem('nexaflow_token');
+        localStorage.removeItem('ZaishTech_token');
       } finally {
         setLoading(false);
       }

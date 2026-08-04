@@ -11,7 +11,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   useEffect(() => {
     const checkAuth = async () => {
-      const token = localStorage.getItem('nexaflow_token');
+      const token = localStorage.getItem('ZaishTech_token');
       if (!token) {
         router.replace('/login');
         return;
@@ -22,13 +22,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         });
         const data = await response.json();
         if (!response.ok || !data.success) {
-          localStorage.removeItem('nexaflow_token');
+          localStorage.removeItem('ZaishTech_token');
           router.replace('/login');
           return;
         }
         setAuthorized(true);
       } catch {
-        localStorage.removeItem('nexaflow_token');
+        localStorage.removeItem('ZaishTech_token');
         router.replace('/login');
       } finally {
         setChecking(false);

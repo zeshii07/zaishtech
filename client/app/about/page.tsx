@@ -268,25 +268,25 @@ export default function AboutPage() {
           <div className="mt-16 grid sm:grid-cols-2 gap-8">
             {[
               {
-                name: "Founder Name",
+                name: "Zeeshan Ahmed ",
                 role: "Founder & Full-Stack Developer",
                 image: "/team-placeholder-1.svg",
                 desc: "Leads product strategy and builds dependable web applications from polished interfaces to scalable backend systems.",
               },
               {
-                name: "SEO Expert Name",
+                name: "Ishfaq Freed",
                 role: "SEO Expert",
                 image: "/team-placeholder-2.svg",
                 desc: "Plans technical and content SEO strategies that improve search visibility and bring qualified customers to your business.",
               },
               {
-                name: "Automation Expert Name",
+                name: "Muhammad Zeeshan",
                 role: "AI Automation Expert",
                 image: "/team-placeholder-3.svg",
                 desc: "Creates practical AI workflows, assistants, and integrations that reduce repetitive work and keep operations moving.",
               },
               {
-                name: "Designer Name",
+                name: "Arooj Fatima",
                 role: "UI/UX Designer",
                 image: "/team-placeholder-4.svg",
                 desc: "Designs clear, attractive experiences that make complex products simple and enjoyable for customers to use.",

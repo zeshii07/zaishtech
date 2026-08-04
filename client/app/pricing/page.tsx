@@ -4,8 +4,8 @@ import Footer from '@/components/layout/Footer';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Pricing — Transparent Software Development Costs | NexaFlow',
-  description: 'NexaFlow pricing: Starter from $2,500, Professional from $8,000, Enterprise custom. Transparent costs, no hidden fees, 30-day free support included.',
+  title: 'Pricing — Transparent Software Development Costs | ZaishTech',
+  description: 'ZaishTech pricing: Starter from $2,500, Professional from $8,000, Enterprise custom. Transparent costs, no hidden fees, 30-day free support included.',
   keywords: ['software development pricing', 'custom software cost', 'web app development price', 'AI automation pricing'],
 };
 

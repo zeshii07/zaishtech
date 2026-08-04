@@ -10,7 +10,7 @@ export default function SubscribersPage() {
   const [total, setTotal] = useState(0);
 
   const loadSubscribers = async () => {
-    const token = localStorage.getItem('nexaflow_token');
+    const token = localStorage.getItem('ZaishTech_token');
     if (!token) return;
     try {
       const res = await fetch('/api/subscribers', { headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' } });
@@ -24,7 +24,7 @@ export default function SubscribersPage() {
 
   const deleteSubscriber = async (id: string) => {
     if (!confirm('Remove this subscriber?')) return;
-    const token = localStorage.getItem('nexaflow_token');
+    const token = localStorage.getItem('ZaishTech_token');
     if (!token) return;
     try {
       await fetch(`/api/subscribers/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' } });

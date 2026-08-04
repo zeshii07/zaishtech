@@ -9,7 +9,7 @@ export default function ProjectsPage() {
   const [loading, setLoading] = useState(true);
 
   const loadProjects = async () => {
-    const token = localStorage.getItem('nexaflow_token');
+    const token = localStorage.getItem('ZaishTech_token');
     if (!token) return;
     try {
       const res = await fetch('/api/projects', { headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' } });

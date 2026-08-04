@@ -39,7 +39,7 @@ export default function Hero() {
       {/* Background */}
       <div className="absolute inset-0">
         <img
-          src="https://picsum.photos/seed/nexaflow-hero/1920/1080.jpg"
+          src="https://picsum.photos/seed/ZaishTech-hero/1920/1080.jpg"
           alt="Tech Background"
           className="w-full h-full object-cover opacity-30"
         />
@@ -111,15 +111,15 @@ export default function Hero() {
                 <div className="w-3 h-3 rounded-full bg-red-500" />
                 <div className="w-3 h-3 rounded-full bg-yellow-500" />
                 <div className="w-3 h-3 rounded-full bg-green-500" />
-                <span className="text-xs text-stone-400 ml-2 font-mono">nexaflow — dev server</span>
+                <span className="text-xs text-stone-400 ml-2 font-mono">ZaishTech — dev server</span>
               </div>
               <div className="p-6 font-mono text-sm leading-7">
-                <div className="text-stone-500">$ nexaflow init --project new-client</div>
+                <div className="text-stone-500">$ ZaishTech init --project new-client</div>
                 <div className="text-emerald-400 mt-2">✓ Project scaffolded successfully</div>
-                <div className="text-stone-500 mt-3">$ nexaflow deploy --env production</div>
+                <div className="text-stone-500 mt-3">$ ZaishTech deploy --env production</div>
                 <div className="text-amber-400 mt-2">⟳ Building optimized bundles...</div>
                 <div className="text-emerald-400 mt-1">✓ Deployed to production</div>
-                <div className="text-stone-500 mt-3">$ nexaflow ai --enable whatsapp-bot</div>
+                <div className="text-stone-500 mt-3">$ ZaishTech ai --enable whatsapp-bot</div>
                 <div className="text-brand-400 mt-2">⚡ AI model loaded &amp; active</div>
                 <div className="text-emerald-400 mt-1">✓ WhatsApp auto-reply running</div>
                 <div className="text-stone-500 mt-3">$ <span className="animate-pulse-dot">|</span></div>

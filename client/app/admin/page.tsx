@@ -11,7 +11,7 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     const loadData = async () => {
-      const token = localStorage.getItem('nexaflow_token');
+      const token = localStorage.getItem('ZaishTech_token');
       if (!token) return;
       const headers = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
 

@@ -3,7 +3,7 @@ import { AuthProvider } from '@/lib/auth';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'NexaFlow — Custom Software, AI & Automation',
+  title: 'ZaishTech — Custom Software, AI & Automation',
   description: 'Custom software development, AI-powered automation, and enterprise solutions for modern business.',
 };
 

@@ -13,7 +13,7 @@ export default function InquiriesPage() {
   const [note, setNote] = useState('');
 
   const loadInquiries = async () => {
-    const token = localStorage.getItem('nexaflow_token');
+    const token = localStorage.getItem('ZaishTech_token');
     if (!token) return;
     const headers = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
     const params: Record<string, string> = { page: filter.page, limit: '10' };
@@ -31,7 +31,7 @@ export default function InquiriesPage() {
   useEffect(() => { loadInquiries(); }, [filter]);
 
   const updateStatus = async (id: string, status: string) => {
-    const token = localStorage.getItem('nexaflow_token');
+    const token = localStorage.getItem('ZaishTech_token');
     if (!token) return;
     try {
       await fetch(`/api/inquiries/${id}`, {
@@ -46,7 +46,7 @@ export default function InquiriesPage() {
 
   const addNote = async (id: string) => {
     if (!note.trim()) return;
-    const token = localStorage.getItem('nexaflow_token');
+    const token = localStorage.getItem('ZaishTech_token');
     if (!token) return;
     try {
       await fetch(`/api/inquiries/${id}`, {
@@ -61,7 +61,7 @@ export default function InquiriesPage() {
 
   const deleteInquiry = async (id: string) => {
     if (!confirm('Delete this inquiry?')) return;
-    const token = localStorage.getItem('nexaflow_token');
+    const token = localStorage.getItem('ZaishTech_token');
     if (!token) return;
     try {
       await fetch(`/api/inquiries/${id}`, {

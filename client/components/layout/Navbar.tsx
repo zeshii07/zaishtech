@@ -14,6 +14,7 @@ export default function Navbar() {
   }, []);
 
  const links = [
+  { href: '/', label: 'Home' },
   { href: '/services', label: 'Services' },
   { href: '/about', label: 'About' },
   { href: '/blog', label: 'Blog' },          // ← ADD THIS LINE

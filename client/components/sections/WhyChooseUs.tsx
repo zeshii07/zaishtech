@@ -29,7 +29,7 @@ export default function WhyChooseUs() {
 
       <div className="relative max-w-7xl mx-auto px-6 md:px-12">
         <div className="reveal text-center max-w-3xl mx-auto">
-          <span className="text-xs font-bold uppercase tracking-widest text-brand-400">Why NexaFlow</span>
+          <span className="text-xs font-bold uppercase tracking-widest text-brand-400">Why ZaishTech</span>
           <h2 className="mt-4 text-3xl md:text-5xl font-medium tracking-tight leading-[1.1]">
             We don&apos;t just code.<br />
             <span className="font-serif italic text-stone-400">We engineer outcomes.</span>

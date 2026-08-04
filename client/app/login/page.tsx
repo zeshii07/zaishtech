@@ -36,7 +36,7 @@ export default function LoginPage() {
 
       setDebugInfo('Saving token...');
       if (data.token) {
-        localStorage.setItem('nexaflow_token', data.token);
+        localStorage.setItem('ZaishTech_token', data.token);
         api.setToken(data.token);
       }
 

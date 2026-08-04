@@ -13,8 +13,8 @@ export default function Testimonials() {
   }, []);
 
   const testimonials = [
-    { initials: 'AK', name: 'Ahmed Khan', role: 'CEO, PropTech Solutions', text: 'NexaFlow built our WhatsApp auto-reply system in 3 weeks. It handles 500+ inquiries daily and has saved us 40 hours per week in manual responses.' },
-    { initials: 'SR', name: 'Sarah Rodriguez', role: 'COO, MFG Distribution', text: 'Our inventory management system went from Excel sheets to a real-time web app. The NexaFlow team understood our warehouse chaos and made it simple.' },
+    { initials: 'AK', name: 'Ahmed Khan', role: 'CEO, PropTech Solutions', text: 'ZaishTech built our WhatsApp auto-reply system in 3 weeks. It handles 500+ inquiries daily and has saved us 40 hours per week in manual responses.' },
+    { initials: 'SR', name: 'Sarah Rodriguez', role: 'COO, MFG Distribution', text: 'Our inventory management system went from Excel sheets to a real-time web app. The ZaishTech team understood our warehouse chaos and made it simple.' },
     { initials: 'MJ', name: 'Mike Johnson', role: 'Founder, QuickCart', text: 'They delivered our Android app on time and on budget. The UI is clean, performance is smooth, and we hit 50K downloads in the first month.' },
   ];
 

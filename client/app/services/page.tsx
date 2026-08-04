@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Services — Custom Software, Web Apps, Android, AI Automation & Inventory Systems',
-  description: 'NexaFlow provides custom software development, web application development, native Android apps, AI & WhatsApp automation, and portal/inventory management systems.',
+  description: 'ZaishTech provides custom software development, web application development, native Android apps, AI & WhatsApp automation, and portal/inventory management systems.',
   keywords: ['custom software development services', 'web app development', 'Android app development', 'AI automation services', 'WhatsApp auto reply bot', 'inventory management system'],
 };
 

@@ -62,7 +62,7 @@ export default function CTA() {
                 </div>
                 <div>
                   <div className="text-xs font-bold uppercase tracking-widest text-stone-400">Email</div>
-                  <div className="text-sm font-medium mt-1">hello@nexaflow.dev</div>
+                  <div className="text-sm font-medium mt-1">hello@ZaishTech.dev</div>
                 </div>
               </div>
               <div className="flex items-center gap-4">
