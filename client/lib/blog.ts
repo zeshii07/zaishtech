@@ -3,6 +3,7 @@ import path from 'path';
 import matter from 'gray-matter';
 
 const postsDirectory = path.join(process.cwd(), 'content/blog');
+const postExtensionPattern = /\.mdx?$/;
 
 export interface BlogPost {
   slug: string;
@@ -28,9 +29,9 @@ export function getAllPosts(): BlogPost[] {
   const fileNames = fs.readdirSync(postsDirectory);
 
   const allPosts = fileNames
-    .filter((name) => name.endsWith('.mdx'))
+    .filter((name) => postExtensionPattern.test(name))
     .map((fileName) => {
-      const slug = fileName.replace(/\.mdx$/, '');
+      const slug = fileName.replace(postExtensionPattern, '');
       return getPostBySlug(slug);
     })
     .filter((post): post is BlogPost => post !== null && post.published)
@@ -40,11 +41,15 @@ export function getAllPosts(): BlogPost[] {
 }
 
 export function getPostBySlug(slug: string): BlogPost | null {
-  const fullPath = path.join(postsDirectory, `${slug}.mdx`);
+  const fileName = [`${slug}.mdx`, `${slug}.md`].find((candidate) =>
+    fs.existsSync(path.join(postsDirectory, candidate)),
+  );
 
-  if (!fs.existsSync(fullPath)) {
+  if (!fileName) {
     return null;
   }
+
+  const fullPath = path.join(postsDirectory, fileName);
 
   const fileContents = fs.readFileSync(fullPath, 'utf8');
   const { data, content } = matter(fileContents);
@@ -73,6 +78,6 @@ export function getAllPostSlugs(): string[] {
 
   return fs
     .readdirSync(postsDirectory)
-    .filter((name) => name.endsWith('.mdx'))
-    .map((name) => name.replace(/\.mdx$/, ''));
+    .filter((name) => postExtensionPattern.test(name))
+    .map((name) => name.replace(postExtensionPattern, ''));
 }
